@@ -8,5 +8,5 @@
   - ['Cheet-Sheets/git笔记.md'](Cheet-Sheets/Markdown.md)：记录常用md语法
 
 - ['Projects'](Projects) :记录数据分析项目
-- ['Daily-Noes.md'](Daily-Noes.md) ：每天的学习记录
+- ['Daily-Notes.md'](Daily-Notes.md) ：每天的学习记录
 - ['Resources'](Resources): 收集的学习资料
