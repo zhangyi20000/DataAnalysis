@@ -6,11 +6,16 @@
 
 - round(x,y): 四舍五入函数
 
+- offset
+  - 通常与 LIMIT 一起使用,跳过指定数量的行，然后返回后续的行。
+  - 用法LIMIT row_count OFFSET offset_value; 先跳过前offset_value行,返回row_count行
+
+
 ### 字符串函数
 
 - contact(s1,s2,...): 连接字符串
 - replace(s,s1,s2): 替换函数。使用s2替换s中所有的s1
-- left(s,n)：返回字符串s最左边n个字符
+- left(s,n):返回字符串s最左边n个字符
 - right(s,n):返回字符串s最右边n个字符
 - substring(s,n,len): 返回从第n个位置起len长度个字符
 
@@ -18,8 +23,8 @@
 
 - year()、month()、day()：获取年月日
 - date_add(date,interval expr type)或  date_sub(date,interval expr type)：日期加减
-例子：date_add('2021-08-03 23:59:59',interval 1 second)
-- datediff(date1,date2)：两日期之间间隔的天数，date1-date2
+例子:date_add('2021-08-03 23:59:59',interval 1 second)
+- datediff(date1,date2):两日期之间间隔的天数, date1-date2
 - dateformat(date,format): 按照制定格式显示date的值  
 format: %Y %m %d
 
@@ -30,6 +35,9 @@ format: %Y %m %d
   - case expr when v1 then r1 [when v2 then v2]...[else rn] end
   - case when v1 then r1 [when v2 then r2]...[else rn] end
 
+- ifnull():如果第一个参数是 NULL，则返回第二个参数；否则返回第一个参数。
+  - 语法:IFNULL(expression, replacement_value)
+  
 ### 窗口函数
 
 #### 窗口函数语法
@@ -119,4 +127,9 @@ FROM table_name;
   使用inner join替代子查询
   避免使用笛卡尔积
   
-## 常见问题
+## 常见题目
+
+1. 查询第N高的数据，如果不存在返回null  
+(leetcode题目)[https://leetcode.cn/problems/second-highest-salary/]
+- 使用:limit + offset
+- 先对数据进行排序去重，offset N-1，limit 1，ifnull判断是偶为空。

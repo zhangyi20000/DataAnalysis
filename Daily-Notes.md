@@ -26,7 +26,7 @@
 
 ## 20250222
 
-- [ ] leetcode SQL 刷题*5
+- [x] leetcode SQL 刷题*5
 - [ ] python 基础语法复习
 
 ## 20250221
