@@ -4,6 +4,22 @@
 
 [TOC]
 
+## 插入表情
+
+[表情大全](https://blog.csdn.net/qq_40896997/article/details/106551767)
+
+- 常用：
+  - :boom:
+  - :exclamation:
+  - :question:
+  - :point_right:
+  - :dizzy:
+  - :thumbsup:
+  - :triangular_flag_on_post:
+  - :herb:
+  - :x:
+  - :white_check_mark:
+  
 ## 注意书写规范
 
 - 列表的上下行应该有一个空行
@@ -87,7 +103,3 @@ def hello_world():
 $$
 \sum_{1}^n i=\frac{n(n+1)}{2}
 $$
-
-## 插入表情
-
-[表情大全](https://blog.csdn.net/qq_40896997/article/details/106551767)

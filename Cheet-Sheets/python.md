@@ -1,6 +1,6 @@
 # python笔记
 
-[TOC]
+  [TOC]
 
 ## 学习资料
 
@@ -50,6 +50,61 @@
 - Python的字符串是不可变的，不能修改字符串
 
 - None是Python的空值类型。如果一个函数没有明确的返回值，就会默认返回None。也常常作为函数的默认参数。
+
+### 错误和异常处理
+
+在try/except中调用函数。如果出现异常，则执行except中内容。
+无论try部分的代码是否成功，都执行一段代码。可以使用finally
+用else让只在try部分成功的情况下，才执行代码
+
+```python
+f = open(path, 'w')
+
+try:
+    write_to_file(f)
+except:
+    print('Failed')
+else:
+    print('Succeeded')
+finally:
+    f.close()
+```
+
+### 文件管理
+
+#### 读取文件
+
+- with:确保文件在使用完毕后被正确关闭。
+- read(size=-1)：指定要读取的字符数（文本模式）或字节数（二进制模式）
+- seek(offset, whence=0):用于移动文件指针到指定位置，返回新的文件指针位置。offset	移动的偏移量（字节数）；whence	可选参数，指定偏移量的参考位置
+- tell():方法用于获取当前文件指针的位置
+
+```python
+# 打开文件
+with open('example.txt', 'r') as file:
+    # 读取前 10 个字符
+    content = file.read(10)
+    print(f"Read content: {content}")
+
+    # 获取当前文件指针位置
+    position = file.tell()
+    print(f"Current position: {position}")
+
+    # 移动文件指针到第 5 个字节
+    file.seek(5)
+    print(f"Position after seek: {file.tell()}")
+
+    # 读取从第 5 个字节开始的内容
+    content = file.read()
+    print(f"Content after seek: {content}")
+```
+
+#### 字节和Unicode
+
+- Unicode: 每个字符都有一个唯一的码点
+  - **UTF-8**:长度可变的Unicode编码（1 到 4 个字节表示一个字符）；兼容 ASCII
+- ASCII字符：固定长度；码点范围是 0 到 127
+- 二进制模式：处理二进制文件（如图片、音频、视频等），读入写入时加符号b
 
 ### 赋值与引用
 
@@ -243,15 +298,185 @@ result = add(3, 5)
   - sorted(words, key=lambda x: len(x))
   解释： 按字符串长度排序
 
+#### 柯里化：部分参数应用
 
+通过“部分参数应用”（partial argument application）从现有函数派生出新函数的技术
+例：
 
+```Python
+def add_numbers(x, y):
+    return x + y
+add_five = lambda y: add_numbers(5, y)
+```
 
+#### 生成器
+
+生成器只能遍历一次，遍历完后需要重新创建
+
+- 作用：特殊的迭代器，允许你按需生成值，而不是一次性生成所有值。在处理大量数据时，节省内存 和 提高性能
+- 创建：
+  - 生成器函数：使用 yield 关键字。返回一个生成器对象，不会立即执行函数体。
+  
+    ```python
+    def simple_generator():
+      yield 1
+      yield 2
+      yield 3
+    # 创建生成器对象
+    gen = simple_generator()
+
+    # 使用 next() 获取值
+    print(next(gen))  # 输出: 1
+    print(next(gen))  # 输出: 2
+    print(next(gen))  # 输出: 3
+    ```
+
+    每次调用,函数会从上次暂停的位置继续执行，直到遇到下一个 yield。
+
+  - 生成器表达式：类似于列表推导式，但使用圆括号。
+
+    ```python
+    # 生成器表达式
+    gen = (x**2 for x in range(5))
+
+    # 使用 for 循环遍历
+    for value in gen:
+        print(value)
+    ```
+
+  - 使用场景
+    - 处理大规模数据
+    - 可以表示无限序列，而不会耗尽内存
+    - 可以用于构建数据处理管道，将多个生成器串联起来
 
 ## 常用模块 import **
 
+### itertools模块
+
+提供了许多用于操作迭代器的工具函数。该模块中的函数返回的都是**迭代器**。
+
+#### 常用函数
+
+- 无限迭代器：
+  - itertools.count(start=m, step=n):生成一个无限的数字序列
+    - 调用： ```for _ in range(5): print(next(counter))```
+  - itertools.cycle(可迭代对象): 无限循环遍历一个可迭代对象
+  - itertools.repeat('Hello', times=3):  重复生成一个值
+- 有限迭代器：
+  - itertools.groupby(iterable, key=None)
+    - iterable：需要分组的目标可迭代对象；key:用于指定分组依据的函数。返回的是迭代器。
+    - eg.
+
+      ```Python
+      for key, group in itertools.groupby(data):
+        print(f"Key: {key}, Group: {list(group)}")
+      ```
+
 ### NumPy
 
+#### 初始化
+
+- data1=[1,2,3]
+- data2=np.array(data1) 或 data2=np.array(data1,dtype=np.float64)
+
+#### NumPy常用函数
+
+- data.dtype :输出data的类型；data.asatype(np.float64)：转换数组类型
+- data.shape
+- np.arange(n);生成1~(n-1)
+
+#### NumPy常见用法
+
+- 切片
+  - 标量值赋值给切片，该值会自动传播到整个选区。
+  - :exclamation: 切片是视图，在视图上的修改会改变源数组
+- 布尔索引
+  - 对数组进行比较运算，得到一个布尔类型的数组（创建的副本）
+
+    ```Python
+    names = np.array(['Bob', 'Joe', 'Will', 'Bob', 'Will', 'Joe', 'Joe'])
+    names == 'Bob'
+    ```
+
+  得到：array([ True, False, False,  True, False, False, False], dtype=bool)
+  
+  - 布尔数组可以用于索引，但是长度得保持一致
+
+    ```Python
+    data[names == 'Bob'] ##找到Bob对应的行
+    ```
+
+  - ~操作符用来反转条件； 布尔运算符： &、|、!=
+- 常见函数（一元或多元）：
+  - np.dot();arr.T;np.sqrt(arr);np.exp(arr);np.maximum(x, y);np.modf(arr)(返回浮点数的整数部分和小数部分)
+  - np.sqrt(arr, arr):可以直接原地操作
+  - numpy.where(condition,x,y)：接收三个参数. 通常用于根据另一个数组而产生一个新的数组。第二三个参数可以是标量也可是是数组。
+    - 例子:np.where(arr > 0, 2, -2)
+  - .sum()函数可以用于对布尔类型数组计数。 (arr > 0).sum()
+  - .sort()对数组就地排序。多维数组可以指定轴排序。（取分位数的方法可以是对数组排序之后，取对应位置上的值）
+  - np.unique()：找出数组中的唯一值并返回已排序的结果
+  - 文件输入与输出：np.save();np.load()
+  - any()：检查可迭代对象中是否存在至少一个为true的元素
+
+- 矩阵运算：numpy.linalg中有标准的矩阵运算
+- 生成随机数：numpy.random里有生成不同分布的函数
+  - numpy.random.randint(最小值, high=None, size=None, dtype=int)。size为输出数组的形状
+
 ### pandas
+
+#### pandas数据结构
+
+- Series（定长的有序字典）
+  - 初始化：
+    - obj = pd.Series([4, 7, -5, 3])
+    - pd.Series([4, 7, -5, 3], index=['d', 'b', 'a', 'c'])
+      可以通过索引的方式获取Series中的单个或者一组值obj2[['c', 'a', 'd']]
+    - pd.Series(sdata【,index=数组】) 直接将字典转化为series，可以按照index来改变排列顺序。
+    - 索引可以通过赋值的方式修改
+  - 根据索引自动对齐数据。
+  - 索引和对象本身都有名字：obj.name；obj.index.name
+- DataFrame：表格型数据结构
+  - 初始化：
+    - 直接传入等长的列表或者NumPy数组组成的字典，然后用np.DataFram()函数初始化
+    - 指定列序列。pd.DataFrame(data, columns=['year', 'state', 'pop'])
+  - loc()属性获取
+
+- 基本功能
+  - .reindex()：用于重新索引一个 Series 或 DataFrame
+    - 语法：DataFrame.reindex(index=None, columns=None, fill_value=None, method=None, ...)  
+    - fill_value：用于填充缺失值的标量值；limit：填充的最大连续缺失值数量；method：填充缺失值的方法。
+  - .drop()：删除指定的行或列
+    - 语法：DataFrame.drop(labels=None, axis=0, index=None, columns=None, level=None, inplace=False, errors='raise')  
+    - inplace=True可以原地修改对象，不返回新的对象
+  - 利用标签的切片是包含末端的
+  - 索引
+    - loc()轴标签：通过标签选择行或列
+    - iloc()整数索引：通过位置选择行或列
+    - 当索引为整数时，为避免歧义，使用loc（标签）或iloc（整数）
+    - 轴索引可以是重复标签,重复的会返回series
+
+#### pandas运算
+
+- df1+df2:对相同索引的对象进行运算，不同索引获得结果并集（不重叠处引入NA）
+- 算术方法：df1.add(df2, fill_value=0):没有重叠的部分填充为0
+- DataFrame和Series之间可以运算  
+需要注意的是，当两边索引不相同的时候，只对相同索引进行计算，不同的索引保留，但是值为NAN。
+- apply():将函数应用到各行或各列形成的一维数组上
+  - 语法：  
+    Series.apply(func, convert_dtype=True, args=(), **kwds)  
+    DataFrame.apply(func, axis=0, raw=False, result_type=None, args=(), \*\*kwds)
+  - 不止可以返回一个标量
+  - 对每个元素应用函数：applymap
+- sort_index(): 对索引进行排序
+  - 语法：  
+        DataFrame.sort_index(axis=0, level=None, ascending=True, inplace=False,  na_position='last', sort_remaining=True, ignore_index=False)
+- sort_values()：按照值进行排序
+- rank()：计算排名
+  - 参数method可以选择计算排名的方法
+- .unique()：得到唯一值数组
+- .value_counts()：计算出现的频率，按照降序排列；pd.value_counts
+- .isin()判断元素是否出现，返回布尔类型。用于过滤Series中或DataFrame列中数据的子集。  
+例：obj[obj.isin(['b', 'c'])]
 
 ### matplotlib
 
@@ -292,11 +517,19 @@ result = add(3, 5)
   - bisect.bisect_right()（或 bisect.bisect()）：返回插入点的索引，如果元素已存在，则返回其右侧位置。
   - 参数：(已排序的序列（列表）,要插入的元素[,查找范围的起始索引,查找范围的结束索引] )
 
-## 数据清洗
+## 数据分析
 
-## 数据可视化
+### 数据加载、存储与文件格式化
 
-### 直方图
+- pd.read_csv()
+  - na_values：指定哪些值应被视为缺失值（NaN）​
+  - sep=：应用正则表达式非正常格式数据进行处理
+  - nrows=；只读取部分行
+  - chunksize=；逐块读取，对返回对象进行迭代，得到每一块的数据
+
+### 数据可视化
+
+#### 直方图
 
 ```python
 import pandas as pd

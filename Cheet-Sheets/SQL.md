@@ -2,14 +2,23 @@
 
 [TOC]
 
-## 常见函数
+## 常见函数和关键字
 
 - round(x,y): 四舍五入函数
-
+- limit:
+  - LIMIT offset, row_count
+  - offset跳过的行数；row_count返回的行的数量
+  - :exclamation: limit 不支持运算！
 - offset
   - 通常与 LIMIT 一起使用,跳过指定数量的行，然后返回后续的行。
   - 用法LIMIT row_count OFFSET offset_value; 先跳过前offset_value行,返回row_count行
-
+- declare
+  - 用于处理变量，通常用于存储过程、函数和触发器中，用于定义和操作局部变量
+  - 语法：DECLARE variable_name data_type
+  - declare 必须放在存储过程、函数或触发器的 BEGIN 和 END 块中，且必须放在其他语句之前
+- set
+  - 为变量赋值
+  - 语法：SET variable_name = value;
 
 ### 字符串函数
 
@@ -55,6 +64,7 @@ function_name (expression) OVER (
 解释：
 
 - PARTITION BY:将数据分组，窗口函数在每个分组内独立计算
+- :exclamation:注意PARTITION BY要在ORDER BY之前！
 
 #### 常见窗口函数
 
@@ -62,9 +72,9 @@ function_name (expression) OVER (
 
 - **ROW_NUMBER()**：返回当前行的**序号**（唯一）
 
-- **RANK()**：返回当前行的**排名**（并列时跳过后续排名）
+- **RANK()**：返回当前行的**排名**（并列时跳过后续排名）得到不连续的排序结果
 
-- **DENSE_RANK()**:返回当前行的排名（并列时不跳过后续排名）
+- **DENSE_RANK()**:返回当前行的排名（并列时不跳过后续排名）得到连续的排序结果
 
 - 语法
 
@@ -74,6 +84,10 @@ SELECT
     ROW_NUMBER()/RANK()/DENSE_RANK() OVER (ORDER BY column2) AS row_num
 FROM table_name;
 ```
+- 区分：1,2,2,2,3
+  - ROW_NUMBER()得到排序结果：1,2,3,4,5
+  - RANK()得到排序结果：1,2,2,2,5
+  - DENSE_RANK()得到排序结果：1,2,2,2,3
 
 ##### 分布函数
 
@@ -126,10 +140,47 @@ FROM table_name;
 - 连接优化  
   使用inner join替代子查询
   避免使用笛卡尔积
-  
+
+### 存储函数命令
+
+**CREATE FUNCTION**用于创建自定义的存储函数，类似于内置函数。
+
+- 基本语法
+
+```SQL
+CREATE [DEFINER = { user | CURRENT_USER }]  
+FUNCTION function_name (parameter_list) 
+RETURNS return_data_type
+[DETERMINISTIC | NOT DETERMINISTIC]
+[CONTAINS SQL | NO SQL | READS SQL DATA | MODIFIES SQL DATA]
+[SQL SECURITY { DEFINER | INVOKER }]
+BEGIN
+    -- 函数体，包含 SQL 语句和 RETURN 语句
+END;
+```
+
+- 例子
+
+```SQL
+DELIMITER //
+
+CREATE FUNCTION add_numbers(a INT, b INT) RETURNS INT
+BEGIN
+    RETURN a + b;
+END //
+
+DELIMITER ;
+# 调用：
+SELECT add_numbers(5, 3); -- 返回 8
+```
+
+- 题目：[存储命令的例子](https://leetcode.cn/problems/nth-highest-salary/)
+
 ## 常见题目
 
-1. 查询第N高的数据，如果不存在返回null  
-(leetcode题目)[https://leetcode.cn/problems/second-highest-salary/]
-- 使用:limit + offset
-- 先对数据进行排序去重，offset N-1，limit 1，ifnull判断是偶为空。
+- 查询第N高的数据，如果不存在返回null  
+
+  [leetcode题目](https://leetcode.cn/problems/second-highest-salary/)
+
+  - 使用:limit + offset
+  - 先对数据进行排序去重，offset N-1，limit 1，ifnull判断是偶为空。
