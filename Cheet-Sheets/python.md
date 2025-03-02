@@ -437,7 +437,13 @@ add_five = lambda y: add_numbers(5, y)
   - 索引和对象本身都有名字：obj.name；obj.index.name
 - DataFrame：表格型数据结构
   - 初始化：
-    - 直接传入等长的列表或者NumPy数组组成的字典，然后用np.DataFram()函数初始化
+    - 直接传入等长的列表或者NumPy数组组成的**字典**，然后用np.DataFram()函数初始化  
+    例子：
+
+      ```python
+      data = pd.DataFrame({'food': ['bacon', 'pulled pork', 'bacon','Pastrami', 'corned beef', 'Bacon','pastrami', 'honey ham', 'nova lox'],'ounces': [4, 3, 12, 6, 7.5, 8, 3, 5, 6]})
+      ```
+
     - 指定列序列。pd.DataFrame(data, columns=['year', 'state', 'pop'])
   - loc()属性获取
 
@@ -454,6 +460,9 @@ add_five = lambda y: add_numbers(5, y)
     - iloc()整数索引：通过位置选择行或列
     - 当索引为整数时，为避免歧义，使用loc（标签）或iloc（整数）
     - 轴索引可以是重复标签,重复的会返回series
+  - take()：按位置（整数索引）选择数据的方法
+    - 语法：DataFrame.take(indices, axis=0, is_copy=True)
+  - .columns.get_indexer()：用于获取给定标签或标签列表在当前 DataFrame 的**列索引中的位置**
 
 #### pandas运算
 
@@ -516,50 +525,3 @@ add_five = lambda y: add_numbers(5, y)
   - bisect.bisect_left()：返回插入点的索引，如果元素已存在，则返回其左侧位置。
   - bisect.bisect_right()（或 bisect.bisect()）：返回插入点的索引，如果元素已存在，则返回其右侧位置。
   - 参数：(已排序的序列（列表）,要插入的元素[,查找范围的起始索引,查找范围的结束索引] )
-
-## 数据分析
-
-### 数据加载、存储与文件格式化
-
-- pd.read_csv()
-  - na_values：指定哪些值应被视为缺失值（NaN）​
-  - sep=：应用正则表达式非正常格式数据进行处理
-  - nrows=；只读取部分行
-  - chunksize=；逐块读取，对返回对象进行迭代，得到每一块的数据
-
-### 数据可视化
-
-#### 直方图
-
-```python
-import pandas as pd
-import matplotlib.pyplot as plt
-
-# 读取 Excel 文件
-file_path = 'your_file.xlsx'  # 替换为你的文件路径
-sheet_name = 'Sheet1'  # 替换为你的工作表名称
-column_name = 'YourColumnName'  # 替换为你要绘制直方图的列名
-
-# 使用 pandas 读取数据
-data = pd.read_excel(file_path, sheet_name=sheet_name)
-
-# 检查数据
-print(data.head())  # 打印前几行数据，确保读取正确
-
-# 创建画布和子图
-plt.figure(figsize=(8, 6))  # 设置画布大小
-
-# 绘制直方图
-plt.hist(data[column_name], bins=30, color='skyblue', edgecolor='black', alpha=0.7)
-
-# 添加标题和标签
-plt.title(f'Distribution of {column_name}', fontsize=16)
-plt.xlabel(column_name, fontsize=14)
-plt.ylabel('Frequency', fontsize=14)
-
-# 添加网格线
-plt.grid(axis='y', linestyle='--', alpha=0.7)
-
-# 显示图形
-plt.show()
-```
