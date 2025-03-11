@@ -3,9 +3,10 @@
 :triangular_flag_on_post: “工具熟练 + 业务通透”  
 :exclamation: 学而不思则罔，思而不学则殆
 
-## github项目
+## github
 
 - [ ] ['数据分析项目'](https://github.com/WillKoehrsen/Data-Analysis)
+- [ ] ['别人的学习笔记'](https://jace-yang.github.io/Full-Stack_Data-Analyst/Analysis/DA.html#id2)
 
 ## 竞赛
 
@@ -29,6 +30,8 @@
   - 互联网、零售、金融等行业分析框架
 - [ ] 《用户画像：方法论与工程化解决方案》
   - 用户分群、标签体系构建、画像应用场景
+- [ ] 《Python数据科学手册》
+- [ ] 《Scikit-Learn实战》
 
 ## 网站
 
