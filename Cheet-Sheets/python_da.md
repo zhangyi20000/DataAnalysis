@@ -237,3 +237,70 @@ pandas使用NaN表示缺失数据
    2. 例子  ：
       `matches = data.str.match(pattern, flags=re.IGNORECASE)`
       检查字符串是否从开头匹配正则表达式，如果成功返回`True`，匹配失败返回`False`。对于缺失值返回`NaN`
+
+## 数据规整：聚合、合并和重塑
+
+### 重要工具：层次化索引
+
+在一个轴上拥有多个（两个以上）索引级别。  
+可作用对象Series、DataFrame。
+
+- 初始化：由列表或数组组成的列表作为索引
+  - Series：data = pd.Series(np.random.randn(7), index=[['a',  'a', 'a', 'b', 'b'], [1, 2, 3, 1, 2]])
+  - DataFrame：
+- 索引
+  - 外层索引：df.loc["A"]
+  - 内层索引
+  - 多层索引：df.loc[("B", 1)]
+  - 每一层都可以设置名字：frame.index.names = ['key1', 'key2']；frame.columns.names = ['state', 'color']
+- 数据重塑：.**unstack**() <span id="unstack"></span>
+  - 就是将其转换为矩阵形式，不存在的标签为NaN
+  - 语法：`DataFrame.unstack(level=-1, fill_value=None)`
+    - level=0:表示第一层（最外层）
+  - 逆运算：**stack**()。可以将多行多列转换为带有标签的一列Series
+- 重排与分级排序
+  - 交换各级别顺序：frame.swaplevel('key1', 'key2')
+  - 排序：sort_index(level=1)，根据单个级别中的值对数据进行排序
+- 聚合操作:根据几倍汇总统计
+  - frame.sum(level='key2')：按照'key2'聚合
+- 列做索引
+  - 初始化：类似字典{'列名1':[元组],'列名2':range(7),,,,}
+  - set_index函数重新设置行索引：frame2 = frame.set_index(['c', 'd'])
+  - reset_index函数的功能和set_index相反。层次化索引会被移到列里。
+
+### 合并数据集
+
+- pandas.merge()：根据一个或多个键将不同的DataFrame中的行连接起来。
+  - 语法：`pd.merge(left, right, how='inner', on=None, left_on=None, right_on=None, left_index=False, right_index=False, suffixes=('_x', '_y'))`
+    - (左侧dataframe，右侧dataframe，how=合并方式（默认内连接），on=用于合并的列名（共用），left_on=左表合并列名，suffixes=重叠列名加后缀)
+- np.concatenate()：轴向连接
+  - 要连接的数组维度相同
+  - 语法：`np.concatenate((a1, a2, ...), axis=0)`
+- pd.concat()：
+  - 语法：
+
+    ```python
+    pd.concat(
+    objs,                # 要合并的对象列表（如 [df1, df2]）
+    axis=0,              # 合并方向：0 按行（纵向），1 按列（横向）
+    join='outer',        # 合并方式：outer（并集），inner（交集）
+    ignore_index=False,  # 是否忽略原索引，重新生成新索引
+    keys=None,           # 添加层次化索引，区分合并对象
+    sort=False,          # 是否对列排序
+    copy=True            # 是否复制数据
+    )
+    ```
+  
+  - 既可以横向也可以纵向拼接。默认在axis=0上工作的（增加行）
+  - 可以增加层次化索引，参数增加keys
+
+- 合并重叠数据集
+  - combine_first方法：（打补丁）用于合并两个 DataFrame 或 Series 的方法，用第二个对象（参数）的非空值填补第一个对象中的缺失值（NaN）
+    - 语法：`df1.combine_first(df2)`
+
+### 重塑（reshape）和轴向旋转（pivot）
+
+- [stack和unstack](#unstack)
+
+- 长格式旋转为宽格式
+- 宽格式旋转为长格式

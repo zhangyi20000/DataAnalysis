@@ -8,6 +8,16 @@
 
 [流程图示范](https://flowchart.js.org/)
 
+## 文档跳转
+
+### 同一文档
+
+1. 添加目标位置
+<span id="jump"></span>
+
+1. 添加需要跳转的位置
+[点击跳转](#jump)
+
 ## 插入表情
 
 [表情大全](https://blog.csdn.net/qq_40896997/article/details/106551767)
