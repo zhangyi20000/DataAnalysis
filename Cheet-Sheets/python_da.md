@@ -303,4 +303,82 @@ pandas使用NaN表示缺失数据
 - [stack和unstack](#unstack)
 
 - 长格式旋转为宽格式
+  - pivot() 函数
+    - 语法：`DataFrame.pivot(index=None, columns=None, values=None)`
+    - index为行索引，columns为新的列名，values为填充新表数据的列
 - 宽格式旋转为长格式
+  - pandas.melt()函数
+    - 语法：`DataFrame.melt(id_vars=None,value_vars=None,var_name=None,value_name='value',ignore_index=True )`
+    - id_vars为不参与融合的列；value_vars为要融合的列，var_name融合后的“变量名”列的标题，value_name融合后的“值”列的标题。
+
+- 其他函数
+  - .reset_index()将行索引转换为普通的列
+
+## 数据可视化
+
+### seaborn
+
+### matplotlib
+
+1. 创建子图  plt.subplots
+   - 语法：fig, ax =plt.subplots(行数，列数，sharex,sharey)
+     - fig：返回的图形对象
+     - ax：返回的子图对象
+     - sharex（sharey）：指定子图有相同的坐标轴
+   - 例子：fig, axes = plt.subplots(2, 3)  
+
+2. 调整子图间距 subplots_adjust
+   - 语法：`subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=None, hspace=None)`
+     - wspace和hspace用于控制宽度和高度的百分比
+3. 颜色、标记、线型
+   - `ax.plot(x, y, linestyle='--', color='g')`
+4. 设置标题、轴标签、刻度以及刻度标签
+   - 改变刻度：`ax.set_xticks([0, 250, 500, 750, 1000])`
+   - 改变刻度标签：`ax.set_xticklabels(['one', 'two', 'three', 'four', 'five'],rotation=30, fontsize='small')`
+   - 设置标题：`ax.set_title('My first matplotlib plot')`
+5. 添加图例
+   - 首先ax.plot时，传入参数label=。`ax.plot(randn(1000).cumsum(), 'k', label='one')`
+   - 之后，使用ax.legend()添加图例
+6. 在图上进行注释
+   - ax.annotate() 详情看[绘图](https://matplotlib.org/stable/gallery/index.html)
+7. 绘制图形
+   - 可以画矩形、三角形、圆形
+8. 图片保存
+   - plt.savefig('figpath.svg', dpi=400, bbox_inches='tight')
+     - dpi：控制分辨率
+     - bbox_inches：剪除图表周围空白的部分
+
+### seaborn绘图
+
+`import seaborn as sns`
+
+1. 线形图
+   - 对于pd.Series类型的对象，直接.plot()就可以画。pd.DataFrame类型类似
+2. 柱状图
+   - data.plot.bar()水平柱状图
+   - data.plot.barh()绘制垂直柱状图
+   - 参数：color='k'，alpha=0.7 设置颜色和不透明度
+   - stacked=True 生成堆积柱状图
+
+3. 直方图和密度图
+   - .plot.hist
+   - .plot.density()
+4. 散点图
+   - sns.regplot
+5. 探索性数据分析时，观察一组变量的散布图，绘制散布图矩阵。
+   - sns.pairplot
+6. 分面图：可视化一个或多个分类变量与数值变量之间的关系。探究分类变量和数值变量之间的关系。
+   - `sns.catplot(x=None, y=None, hue=None, data=None, row=None, col=None, kind='strip', height=5)`
+     - x:x轴上分类变量。y:y轴上数值变量
+     - hue：用于分组的分类变量
+     - row、col：分别为分面的行变量和列变量
+     - kind：绘图类型。
+7. 箱线图
+   - sns.factorplot
+
+- 其他函数
+  - 交叉表（类似数据透视表）pd.crosstab
+    - `pd.crosstab(index, columns, values=None, rownames=None, colnames=None, aggfunc=None, margins=False, margins_name='All', dropna=True, normalize=False)`
+    - index:行索引；columns：列索引；aggfunc：聚合函数（默认为计数）
+  - 对数据归一化：.div
+    - 例子：data.div(data.sum(1), axis=0)。对每行归一化
