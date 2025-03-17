@@ -149,14 +149,31 @@ FROM table_name;
 
 ```SQL
 CREATE [DEFINER = { user | CURRENT_USER }]  
-FUNCTION function_name (parameter_list) 
-RETURNS return_data_type
+FUNCTION 函数名称 (参数列表) 
+RETURNS 返回值类型
 [DETERMINISTIC | NOT DETERMINISTIC]
 [CONTAINS SQL | NO SQL | READS SQL DATA | MODIFIES SQL DATA]
 [SQL SECURITY { DEFINER | INVOKER }]
 BEGIN
     -- 函数体，包含 SQL 语句和 RETURN 语句
 END;
+```
+
+- 传入参数到函数体，在BEGIN 之后，声明（DECLARE）变量和类型，之后设置（SET）值
+获取第N高的薪水
+
+```SQL
+CREATE FUNCTION getNthHighestSalary(N INT) RETURNS INT
+BEGIN
+DECLARE M INT; 
+    SET M = N-1; 
+  RETURN (
+      SELECT DISTINCT salary
+      FROM Employee
+      ORDER BY salary DESC
+      LIMIT M, 1
+  );
+END
 ```
 
 - 例子

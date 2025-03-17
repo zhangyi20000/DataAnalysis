@@ -272,6 +272,7 @@ pandas使用NaN表示缺失数据
 
 - pandas.merge()：根据一个或多个键将不同的DataFrame中的行连接起来。
   - 语法：`pd.merge(left, right, how='inner', on=None, left_on=None, right_on=None, left_index=False, right_index=False, suffixes=('_x', '_y'))`
+    - how=left;right;outer;inner
     - (左侧dataframe，右侧dataframe，how=合并方式（默认内连接），on=用于合并的列名（共用），left_on=左表合并列名，suffixes=重叠列名加后缀)
 - np.concatenate()：轴向连接
   - 要连接的数组维度相同
@@ -316,8 +317,6 @@ pandas使用NaN表示缺失数据
 
 ## 数据可视化
 
-### seaborn
-
 ### matplotlib
 
 1. 创建子图  plt.subplots
@@ -326,6 +325,8 @@ pandas使用NaN表示缺失数据
      - ax：返回的子图对象
      - sharex（sharey）：指定子图有相同的坐标轴
    - 例子：fig, axes = plt.subplots(2, 3)  
+   - 绘制子图：axes[0,0].plot()
+   - 具体的子图绘制见 [数据观察](#数据观察)
 
 2. 调整子图间距 subplots_adjust
    - 语法：`subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=None, hspace=None)`
@@ -335,7 +336,7 @@ pandas使用NaN表示缺失数据
 4. 设置标题、轴标签、刻度以及刻度标签
    - 改变刻度：`ax.set_xticks([0, 250, 500, 750, 1000])`
    - 改变刻度标签：`ax.set_xticklabels(['one', 'two', 'three', 'four', 'five'],rotation=30, fontsize='small')`
-   - 设置标题：`ax.set_title('My first matplotlib plot')`
+   - **设置标题**：`ax.set_title('My first matplotlib plot')`
 5. 添加图例
    - 首先ax.plot时，传入参数label=。`ax.plot(randn(1000).cumsum(), 'k', label='one')`
    - 之后，使用ax.legend()添加图例
@@ -382,3 +383,152 @@ pandas使用NaN表示缺失数据
     - index:行索引；columns：列索引；aggfunc：聚合函数（默认为计数）
   - 对数据归一化：.div
     - 例子：data.div(data.sum(1), axis=0)。对每行归一化
+
+## 数据聚合与分组运算
+
+隐函数定义分组规则->groupby应用分组->.apply(函数)将函数应用到分组后的结果。
+
+### groupby
+
+### cut
+
+将连续数据分箱，根据数值划分为离散的区间，并返回每个值所属的区间。
+
+语法：
+
+```Python
+pd.cut(x, bins, right=True, labels=None, retbins=False, precision=3, include_lowest=False, duplicates='raise')
+```
+
+x:需要分箱的数据；  
+bins：分箱的规则，可以是整数（表示**等宽**分箱的数量）或列表（表示自定义的区间边界）；  
+labels：为每个区间指定标签
+
+例子：
+
+```python
+df = pd.DataFrame({'Value': [1, 7, 5, 4, 6, 3]})
+df['Category'] = pd.cut(df['Value'], bins=[0, 3, 6, 9], labels=['Low', 'Medium', 'High'])
+```
+
+groupby 和 cut 连用：对分箱之后的数据分组，得到一些结果。（自定义分组）
+
+### 应用
+
+#### 缺失数据处理
+
+- dropna()
+- fillna()
+- 对不同的分组填充不同的数值
+
+  ```python
+  fill_mean = lambda g: g.fillna(g.mean())
+  data.groupby(group_key).apply(fill_mean)
+  ```
+
+#### 随机采样
+
+#### 分组加权平均和相关系数
+
+```python
+grouped = df.groupby('category')
+get_wavg = lambda g: np.average(g['data'], weights=g['weights'])
+grouped.apply(get_wavg)
+```
+
+### 交叉表
+
+用于计算分组频率的透视表
+
+- pandas.crosstab
+
+```python
+pandas.crosstab(index, columns, values=None, rownames=None, colnames=None, aggfunc=None, margins=False, margins_name='All', dropna=True, normalize=False)
+```
+
+index:交叉表的行；columns：交叉表的列；values：要聚合的值；aggfunc：指定的聚合函数（sum，mean等）；margins：是否在交叉表中添加行和列的总计。
+
+## 分析全流程
+
+拿到一个数据该怎么办？
+
+## 数据处理
+
+1. 加载数据集  
+data=`pd.read_csv("path")`
+2. 查看数据分布  
+`data.describu()` ：每列的平均值、分位数、最大值、最小值等，看数据是否有异常。  
+`data.info()`：可以看到数据是否有缺失。
+3. 缺失数据处理
+   1. 是否有缺失：`data.isna().sum()`
+   2. 找到缺失值所在行：`data[data.isna().any(axis=1)]`
+   3. 缺失值处理
+      - 保留：
+        - `data['A']=data['A'].fillna(value)`其中value可以是具体的数值，或者是函数
+      - 去除：
+4. 重复数据
+   1. 是否有重复：
+      1. 快速判断`data.duplicated().any()`，某列：`data.duplicated()`返回 bool值序列。
+      1. 找到所在位置：`data[data['A'].duplicated(keep=False)]`
+   2. 重复数据处理
+      - 删除重复： `data_deduplicated = data.drop_duplicates()`
+
+## 数据观察
+
+[绘制子图](#matplotlib)  
+
+对于连续型变量可以用直方图查看分布状况，对于离散型变量，使用条形图等查看分布。
+
+0. 对分类数据快速画图,使用plot方法
+
+  ```python
+  sex_count=data['sex'].value_counts()
+  sex_count.plot(kind='bar')
+  ```
+
+1. 离散数据的分布情况
+   - 单列取值分布： `data['A'].value_counts()`，结果不包括缺失数据。
+   - 所有列：`data.apply(lambda col: col.value_counts())`
+2. 连续性直方图  
+  plt.hist()返回参数：n（柱子的频数）,bins（柱子的边界）,patches（柱子的图形对象）。
+
+    ```python
+    plt.tight_layout() #自动调整大小
+    n, bins, patches = plt.hist(data['Age'],bins=10,edgecolor='black')
+    total=len(data['Age'])
+    for i in range(len(n)):
+        plt.text(
+            bins[i] + (bins[i+1] - bins[i]) / 2,  # x 位置：柱子中心
+            n[i] + 0.1,                            # y 位置：柱子高度上方
+            f'{n[i]/total:.2%}',                         # 显示的文本（频率）
+            ha='center',                            # 水平对齐方式
+            va='bottom'                             # 垂直对齐方式
+        )
+    plt.title('年龄的分布')
+    plt.xlabel('年龄')
+    plt.ylabel('频数')
+    plt.show()
+    ```
+
+1. 饼图
+
+  ```python
+  labels=['男','女']
+  sizes=data['Sex'].value_counts()
+  colors = [ 'lightskyblue','lightcoral']
+  plt.pie(
+      sizes,
+      labels=labels,
+      colors=colors,
+      autopct='%1.1f%%',  # 显示百分比
+      shadow=True,  # 添加阴影
+      startangle=90  # 旋转角度
+  )
+  # 设置标题
+  plt.title('性别分布饼图')
+
+  # 显示图形
+  plt.show()
+  ```
+
+4. 条形图

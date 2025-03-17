@@ -17,9 +17,24 @@
   - 为什么用Anaconda配置
     - 不同的项目依赖不同版本的python或第三方库，用Anaconda为每个项目创建独立的虚拟环境。
     - Anaconda 提供了 conda 包管理工具，可以轻松安装、更新和删除依赖库，并且会自动解决依赖关系。
-    - [配置教程](https://blog.csdn.net/u011385476/article/details/105277426) 或 使用**deepseek**询问
     - 现有项目：将虚拟环境配置为项目的解释器!
   [alt text](image.png)
+  - 怎么配置环境?[配置教程](https://blog.csdn.net/qq_45368632/article/details/124314709)
+    1. 打开：Anaconda Prompt
+    2. 创建虚拟环境的命令：`conda create -n <env_name> <package_names>`  
+    例子：'conda create -n python3 python=3.5 numpy pandas'  
+    环境保存在：/Users/<user_name>/anaconda3/env 目录下
+    3. 激活环境：`activate <env_name>`
+    4. 退出环境：`conda deactivate`
+    5. 显示所有环境：`conda env list`
+  - 安装库
+    - pip安装：
+      - `python -m pip install <package_name>  -i https://pypi.tuna.tsinghua.edu.cn/simple`
+    - conda安装
+      - 在指定环境下安装包：`conda install -n <env_name> <package_name>`
+      - 或者，先激活环境，`conda install <package_name>`
+    - 判断是否已安装： `conda list library_name`
+    - ctrl+c终止安装
 - jupyter
   - 打开其他盘的文件
     1. cd /d D:
@@ -30,6 +45,12 @@
       - 变量后使用，可以显示对象的信息。
       - 函数名后使用会显示说明文档。??会显示函数源码
       - 搜索命名空间，字符与通配符结合可以匹配所有的名字。如：np.*load*?，搜索np中所有包含load
+  - [切换运行环境](https://blog.csdn.net/weixin_43561913/article/details/121014957)
+    1. 打开  Anaconda Prompt（不能在jupyter notebook中操作，没有权限）
+    2. 激活环境 `activate <env_name>`
+    3. 安装：`conda install ipykernel`
+  - [代码自动补全](https://blog.csdn.net/spade666/article/details/142431371)
+  - 显示中文 ：加上代码 `plt.rcParams['font.sans-serif'] = ['SimHei']`
 
 ## 基础知识
 
@@ -416,6 +437,7 @@ add_five = lambda y: add_numbers(5, y)
   - .sum()函数可以用于对布尔类型数组计数。 (arr > 0).sum()
   - .sort()对数组就地排序。多维数组可以指定轴排序。（取分位数的方法可以是对数组排序之后，取对应位置上的值）
   - np.unique()：找出数组中的唯一值并返回已排序的结果
+    - 例：
   - 文件输入与输出：np.save();np.load()
   - any()：检查可迭代对象中是否存在至少一个为true的元素
 
@@ -473,16 +495,26 @@ add_five = lambda y: add_numbers(5, y)
 需要注意的是，当两边索引不相同的时候，只对相同索引进行计算，不同的索引保留，但是值为NAN。
 - apply():将函数应用到各行或各列形成的一维数组上
   - 语法：  
-    Series.apply(func, convert_dtype=True, args=(), **kwds)  
-    DataFrame.apply(func, axis=0, raw=False, result_type=None, args=(), \*\*kwds)
+    `Series.apply(func, convert_dtype=True, args=(), **kwds)  
+    DataFrame.apply(func, axis=0, raw=False, result_type=None, args=(), \*\*kwds)`
   - 不止可以返回一个标量
   - 对每个元素应用函数：applymap
 - sort_index(): 对索引进行排序
   - 语法：  
         DataFrame.sort_index(axis=0, level=None, ascending=True, inplace=False,  na_position='last', sort_remaining=True, ignore_index=False)
-- sort_values()：按照值进行排序
-- rank()：计算排名
-  - 参数method可以选择计算排名的方法
+- **sort_values()**：按照值进行排序
+
+  ```Python
+  df = pd.DataFrame(data)
+  sorted_df = df.sort_values(by='Age')
+  ```
+
+- rank()：计算排名。参数method可以选择计算排名的方法
+
+```Python
+df['rnk'] = df['salary'].rank(method='dense', ascending=False)
+```
+
 - .unique()：得到唯一值数组
 - .value_counts()：计算出现的频率，按照降序排列；pd.value_counts
 - .isin()判断元素是否出现，返回布尔类型。用于过滤Series中或DataFrame列中数据的子集。  

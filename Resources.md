@@ -44,3 +44,27 @@
 - [ ] A/B测试
 - [ ] 因果推断
 - [ ] 漏斗分析
+
+## 机器学习
+
+- 零基础  
+
+吴恩达机器学习（0基础） BV1Bq421A74G  
+
+李沐深度学习  BV1if4y147hS  
+
+[StatQuest](https://space.bilibili.com/3546620985608836?spm_id_from=333.337.0.0)
+
+[王木头学科学](https://space.bilibili.com/504715181?spm_id_from=333.337.0.0)
+
+[简化可得](https://www.zhihu.com/people/huajiankede)
+
+- 进阶
+
+[跟李沐学AI](https://space.bilibili.com/1567748478?spm_id_from=333.337.0.0)
+
+## 在线书籍
+
+[《动手学深度学习》](https://zh.d2l.ai/chapter_preface/index.html#)
+
+[结构化提示词](https://langgptai.feishu.cn/wiki/RXdbwRyASiShtDky381ciwFEnpe)
