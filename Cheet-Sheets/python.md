@@ -480,6 +480,9 @@ add_five = lambda y: add_numbers(5, y)
   - 利用标签的切片是包含末端的
   - 索引
     - loc()轴标签：通过标签选择行或列
+      - 取某一行：`df.loc[3]           # 取第索引为3的整行数据`
+      - 取某一列:`df.loc[:, '列名']    # 取整列数据`
+      - 条件筛选：`df.loc[df['成绩'] > 90]`
     - iloc()整数索引：通过位置选择行或列
     - 当索引为整数时，为避免歧义，使用loc（标签）或iloc（整数）
     - 轴索引可以是重复标签,重复的会返回series
@@ -506,14 +509,14 @@ add_five = lambda y: add_numbers(5, y)
 
   ```Python
   df = pd.DataFrame(data)
-  sorted_df = df.sort_values(by='Age')
+  sorted_df = df.sort_values(by='Age', ascending=False)
   ```
 
 - rank()：计算排名。参数method可以选择计算排名的方法
 
-```Python
-df['rnk'] = df['salary'].rank(method='dense', ascending=False)
-```
+  ```Python
+  df['rnk'] = df['salary'].rank(method='dense', ascending=False)
+  ```
 
 - .unique()：得到唯一值数组
 - .value_counts()：计算出现的频率，按照降序排列；pd.value_counts

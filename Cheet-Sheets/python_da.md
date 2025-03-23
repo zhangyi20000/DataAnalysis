@@ -320,11 +320,11 @@ pandas使用NaN表示缺失数据
 ### matplotlib
 
 1. 创建子图  plt.subplots
-   - 语法：fig, ax =plt.subplots(行数，列数，sharex,sharey)
+   - 语法：fig, ax =plt.subplots(行数，列数，sharex=True, sharey=True, figsize=(15, 8))
      - fig：返回的图形对象
      - ax：返回的子图对象
-     - sharex（sharey）：指定子图有相同的坐标轴
-   - 例子：fig, axes = plt.subplots(2, 3)  
+     - sharex（sharey）：指定子图有相同的坐标轴。如果是对比两个直方图，则有相同坐标轴重要！
+   - 例子：fig, axes = plt.subplots(2, 3, figsize=(15, 8))  
    - 绘制子图：axes[0,0].plot()
    - 具体的子图绘制见 [数据观察](#数据观察)
 
@@ -389,6 +389,19 @@ pandas使用NaN表示缺失数据
 隐函数定义分组规则->groupby应用分组->.apply(函数)将函数应用到分组后的结果。
 
 ### groupby
+
+用来对数据按照某些列进行分组，然后对每组进行统计、计算等操作。
+
+- 用法
+  
+    ```python
+    df.groupby('列名')
+    df.groupby(['列名1', '列名2'])
+    df.groupby('类别列')['数值列'].agg(['mean', 'sum', 'max'])
+    ```
+
+- 参数
+  - as_index：分组后的结果中，分组键是否作为索引。
 
 ### cut
 
@@ -457,8 +470,10 @@ index:交叉表的行；columns：交叉表的列；values：要聚合的值；a
 1. 加载数据集  
 data=`pd.read_csv("path")`
 2. 查看数据分布  
-`data.describu()` ：每列的平均值、分位数、最大值、最小值等，看数据是否有异常。  
-`data.info()`：可以看到数据是否有缺失。
+   - `data.describu()` ：每列的平均值、分位数、最大值、最小值等，看数据是否有异常。
+     - 参数：  include用来指定哪些类型的数据列需要被统计描述。
+     ![alt text](image-1.png)
+   - `data.info()`：可以看到数据是否有缺失。
 3. 缺失数据处理
    1. 是否有缺失：`data.isna().sum()`
    2. 找到缺失值所在行：`data[data.isna().any(axis=1)]`
@@ -469,7 +484,7 @@ data=`pd.read_csv("path")`
 4. 重复数据
    1. 是否有重复：
       1. 快速判断`data.duplicated().any()`，某列：`data.duplicated()`返回 bool值序列。
-      1. 找到所在位置：`data[data['A'].duplicated(keep=False)]`
+      2. 找到所在位置：`data[data['A'].duplicated(keep=False)]`
    2. 重复数据处理
       - 删除重复： `data_deduplicated = data.drop_duplicates()`
 
@@ -480,55 +495,133 @@ data=`pd.read_csv("path")`
 对于连续型变量可以用直方图查看分布状况，对于离散型变量，使用条形图等查看分布。
 
 0. 对分类数据快速画图,使用plot方法
+   1. 条形图
 
-  ```python
-  sex_count=data['sex'].value_counts()
-  sex_count.plot(kind='bar')
-  ```
+    ```python
+    sex_count=data['sex'].value_counts()
+    sex_count.plot(kind='bar')
+    ```
 
 1. 离散数据的分布情况
    - 单列取值分布： `data['A'].value_counts()`，结果不包括缺失数据。
    - 所有列：`data.apply(lambda col: col.value_counts())`
 2. 连续性直方图  
-  plt.hist()返回参数：n（柱子的频数）,bins（柱子的边界）,patches（柱子的图形对象）。
+   - 单变量：plt.hist()返回参数：n（柱子的频数）,bins（柱子的边界）,patches（柱子的图形对象）。
+
+      ```python
+      plt.tight_layout() #自动调整大小
+      n, bins, patches = plt.hist(data['Age'],bins=10,edgecolor='black')
+      total=len(data['Age'])
+      for i in range(len(n)):
+          plt.text(
+              bins[i] + (bins[i+1] - bins[i]) / 2,  # x 位置：柱子中心
+              n[i] + 0.1,                            # y 位置：柱子高度上方
+              f'{n[i]/total:.2%}',                         # 显示的文本（频率）
+              ha='center',                            # 水平对齐方式
+              va='bottom'                             # 垂直对齐方式
+          )
+      plt.title('年龄的分布')
+      plt.xlabel('年龄')
+      plt.ylabel('频数')
+      plt.show()
+      ```
+
+   - 两个变量之间，绘制分组图
+
+     ```python
+      g = sns.FacetGrid(train_df, col='Survived') #创建分面网格，数据按列的分类结果绘制多个图
+      g.map(plt.hist, 'Age', bins=20) # 在每个子图绘制直方图，数据列为Age，分为20个区间
+     ```
+
+3. 饼图
 
     ```python
-    plt.tight_layout() #自动调整大小
-    n, bins, patches = plt.hist(data['Age'],bins=10,edgecolor='black')
-    total=len(data['Age'])
-    for i in range(len(n)):
-        plt.text(
-            bins[i] + (bins[i+1] - bins[i]) / 2,  # x 位置：柱子中心
-            n[i] + 0.1,                            # y 位置：柱子高度上方
-            f'{n[i]/total:.2%}',                         # 显示的文本（频率）
-            ha='center',                            # 水平对齐方式
-            va='bottom'                             # 垂直对齐方式
-        )
-    plt.title('年龄的分布')
-    plt.xlabel('年龄')
-    plt.ylabel('频数')
+    labels=['男','女']
+    sizes=data['Sex'].value_counts()
+    colors = [ 'lightskyblue','lightcoral']
+    plt.pie(
+        sizes,
+        labels=labels,
+        colors=colors,
+        autopct='%1.1f%%',  # 显示百分比
+        shadow=True,  # 添加阴影
+        startangle=90  # 旋转角度
+    )
+    # 设置标题
+    plt.title('性别分布饼图')
+
+    # 显示图形
     plt.show()
     ```
 
-1. 饼图
-
-  ```python
-  labels=['男','女']
-  sizes=data['Sex'].value_counts()
-  colors = [ 'lightskyblue','lightcoral']
-  plt.pie(
-      sizes,
-      labels=labels,
-      colors=colors,
-      autopct='%1.1f%%',  # 显示百分比
-      shadow=True,  # 添加阴影
-      startangle=90  # 旋转角度
-  )
-  # 设置标题
-  plt.title('性别分布饼图')
-
-  # 显示图形
-  plt.show()
-  ```
-
 4. 条形图
+   - 用pandas内置函数
+   - 用matplotlib绘图
+
+      ```python
+      labels=['男','女']
+      sex_count=data['Sex'].value_counts()
+      bar = plt.bar(labels,sex_count, color='skyblue')
+      #在每个条形上方标注频数
+      for bar in bars:
+          height = bar.get_height()
+          plt.text(bar.get_x() + bar.get_width() / 2, height, int(height),
+                  ha='center', va='bottom', fontsize=12)
+      # 添加标题和标签
+      plt.title('年龄直方图')
+      plt.xlabel('年龄')
+      plt.ylabel('频数')
+
+      # 显示图表
+      plt.show()
+      ```
+
+## 相关性分析
+
+1. 连续数据相关性分析  [理论](../业务相关/统计学知识.md#皮尔逊相关系数) 
+   1. 皮尔逊相关系数
+      - 代码：
+
+         ```python
+         correlation = data['2urvived'].corr(data['Age'], method='pearson')
+         print(correlation)
+         ```
+
+   2. 斯皮尔曼相关系数  
+      - 代码：method='spearman'
+
+   3. 相关性矩阵
+      - 代码：
+
+         ```python
+         correlation_matrix = data.corr()
+         print(correlation_matrix)
+         ```
+
+   4. 绘制相关系数图
+
+2. 分类数据
+   - groupby聚类，查看每个类别的差异
+     - 例：
+
+      ```python
+      train_data[['Pclass','Survived']].groupby(['Pclass'],as_index=False).mean().sort_values(by='Survived', ascending=False)
+      ```
+
+3. 可视化
+   - 分组条形图
+   - 分组点图
+
+     ```python
+      grid = sns.FacetGrid(train_df, row='Embarked', size=2.2, aspect=1.6) # 
+      grid.map(sns.pointplot, 'Pclass', 'Survived', 'Sex', palette='deep') 
+      grid.add_legend()
+     ```
+
+    **解释**：'Embarked'有几个类型就有几个子图；'Pclass'为每个子图的横轴；'Survived'为每个子图的纵轴，值为'Sex'；palette='deep'为颜色风格；  
+    **得到**：  
+    <img src="image-2.png" alt="alt text" width="200"/>
+
+## 假设检验
+
+用于判断相关性是否显著
